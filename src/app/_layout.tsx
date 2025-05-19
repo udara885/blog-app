@@ -1,53 +1,30 @@
-import '../../global.css';
+import Feather from '@expo/vector-icons/Feather';
+import { Stack } from 'expo-router';
+import { Pressable, View } from 'react-native';
 
-import { Tabs } from 'expo-router';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-
-export default function Layout() {
+const RootLayout = () => {
   return (
-    <Tabs>
-      <Tabs.Screen
-        name="index"
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="ArticleScreen"
         options={{
-          headerTitle: 'I TIPS',
-          title: 'Main page',
-          tabBarIcon: (tabInfo) => {
-            return (
-              <FontAwesome name="home" size={24} color={tabInfo.focused ? '#007AFF' : '#8e8e93'} />
-            );
-          },
+          headerTitle: '',
+          headerShadowVisible: false,
+          headerRight: () => (
+            <View className="flex flex-row items-center">
+              <Pressable className="mr-4">
+                <Feather name="bookmark" size={24} color="black" />
+              </Pressable>
+              <Pressable className="mr-4">
+                <Feather name="share" size={24} color="black" />
+              </Pressable>
+            </View>
+          ),
         }}
       />
-      <Tabs.Screen
-        name="Search"
-        options={{
-          title: 'Search',
-          tabBarIcon: (tabInfo) => {
-            return (
-              <FontAwesome
-                name="search"
-                size={24}
-                color={tabInfo.focused ? '#007AFF' : '#8e8e93'}
-              />
-            );
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="Bookmarks"
-        options={{
-          title: 'Bookmarks',
-          tabBarIcon: (tabInfo) => {
-            return (
-              <FontAwesome
-                name="bookmark"
-                size={24}
-                color={tabInfo.focused ? '#007AFF' : '#8e8e93'}
-              />
-            );
-          },
-        }}
-      />
-    </Tabs>
+    </Stack>
   );
-}
+};
+
+export default RootLayout;
