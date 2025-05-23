@@ -62,7 +62,7 @@ const ArticleScreen = () => {
         }),
       ]).start();
     }
-  }, [isBottomSheetVisible]);
+  }, [isBottomSheetVisible, fadeAnim, slideAnim]);
 
   const theme = useColorScheme();
 
@@ -90,7 +90,7 @@ const ArticleScreen = () => {
                 </Text>
               </View>
             </View>
-            <Text className="mt-5 dark:text-white">{articleData.description}</Text>
+            <Text className="mb-12 mt-5 dark:text-white">{articleData.description}</Text>
           </View>
         </View>
       </ScrollView>
