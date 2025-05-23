@@ -4,8 +4,8 @@ import { Tabs } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Modal, Pressable, Text, useColorScheme, View } from 'react-native';
-import { useState } from 'react';
+import { Animated, Modal, Pressable, Text, useColorScheme, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
 
 const arr1 = ['Dark mode', 'Notification', 'Clear cache', 'Change font size'];
 
@@ -17,13 +17,47 @@ const arr2 = [
 const TabsLayout = () => {
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
 
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   const openBottomSheet = () => {
     setIsBottomSheetVisible(true);
   };
 
   const closeBottomSheet = () => {
-    setIsBottomSheetVisible(false);
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: -1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: -1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setIsBottomSheetVisible(false);
+    });
   };
+
+  useEffect(() => {
+    if (isBottomSheetVisible) {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [isBottomSheetVisible]);
 
   const theme = useColorScheme();
 
@@ -91,10 +125,36 @@ const TabsLayout = () => {
           }}
         />
       </Tabs>
-      <Modal visible={isBottomSheetVisible} transparent={true} onRequestClose={closeBottomSheet}>
+      <Modal
+        visible={isBottomSheetVisible}
+        transparent={true}
+        animationType="none"
+        onRequestClose={closeBottomSheet}>
         <View className="flex-1 justify-end">
-          <Pressable onPress={closeBottomSheet} className="absolute inset-0 bg-black/50" />
-          <View className="rounded-t-2xl bg-gray-100 p-5 dark:bg-[#212529]">
+          <Animated.View
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              right: 0,
+              left: 0,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              opacity: fadeAnim,
+            }}>
+            <Pressable onPress={closeBottomSheet} className="h-full w-full" />
+          </Animated.View>
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  translateY: slideAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [300, 0],
+                  }),
+                },
+              ],
+            }}
+            className="rounded-t-2xl bg-gray-100 p-5 dark:bg-[#212529]">
             <View className="mb-5 flex flex-row items-center justify-between">
               <Text className="text-3xl font-bold dark:text-white">Settings</Text>
               <AntDesign name="closecircle" size={20} color="gray" onPress={closeBottomSheet} />
@@ -135,7 +195,7 @@ const TabsLayout = () => {
               <Text className="text-gray-500">© 2025 - iThuThuat.vn</Text>
               <Text className="text-gray-500">Version 1.0</Text>
             </View>
-          </View>
+          </Animated.View>
         </View>
       </Modal>
     </>
