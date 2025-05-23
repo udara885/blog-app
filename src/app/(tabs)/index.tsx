@@ -1,9 +1,12 @@
 import { View, Text, Image, ScrollView } from 'react-native';
 import ArticleCard from '../../components/ArticleCard';
+import { Link } from 'expo-router';
+import { articles } from '~/src/data/articles';
+
 const index = () => {
   return (
-    <ScrollView className="p-4">
-      <Text className="text-3xl font-bold">Featured article</Text>
+    <ScrollView className="p-4 dark:bg-black">
+      <Text className="text-3xl font-bold dark:text-white">Featured article</Text>
       <View className="mt-5">
         <Image
           source={{
@@ -11,18 +14,25 @@ const index = () => {
           }}
           className="relative h-80 w-full rounded-2xl"
         />
-        <View className="absolute bottom-5 left-5 right-5 rounded-2xl bg-white p-5">
+        <View className="absolute bottom-5 left-5 right-5 rounded-2xl bg-white p-5 dark:bg-black/80">
           <Text className="mb-1 text-xs text-[#007AFF]">TIPS How</Text>
-          <Text className="font-bold">TRICK How to restore factory settings for HomePod mini</Text>
+          <Text className="font-bold dark:text-white">
+            TRICK How to restore factory settings for HomePod mini
+          </Text>
         </View>
       </View>
-      <Text className="mt-5 text-3xl font-bold">New articles</Text>
+      <Text className="mt-5 text-3xl font-bold dark:text-white">New articles</Text>
       <View className="mb-10 mt-5 flex flex-col gap-5">
-        {[...Array(3)].map((_, index) => (
-          <ArticleCard key={index} bookmark={true} />
+        {articles.map((article, index) => (
+          <Link
+            href={{ pathname: '/ArticleScreen', params: { article: JSON.stringify(article) } }}
+            key={index}>
+            <ArticleCard bookmark={true} article={article} />
+          </Link>
         ))}
       </View>
     </ScrollView>
   );
 };
+
 export default index;
