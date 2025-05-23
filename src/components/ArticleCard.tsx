@@ -1,43 +1,62 @@
 import { View, Text, Image } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Entypo from '@expo/vector-icons/Entypo';
 import { useState } from 'react';
-import { Link } from 'expo-router';
+import { usePathname } from 'expo-router';
+import { format } from 'timeago.js';
 
-const ArticleCard = ({ bookmark }: { bookmark: boolean }) => {
-  const [isBookmarked, setIsBookmarked] = useState(false);
+interface Article {
+  title: string;
+  image: string;
+  category: string;
+  description: string;
+  createdAt: Date;
+  isBookmarked: boolean;
+}
+
+const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Article }) => {
+  const [post, setPost] = useState(article);
 
   const toggleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
+    setPost({ ...post, isBookmarked: !isBookmarked });
   };
 
+  const { title, image, createdAt, category, isBookmarked } = post;
+
+  const pathname = usePathname();
+
   return (
-    <Link href="/ArticleScreen">
-      <View className="flex w-full flex-row gap-5">
-        <Image
-          source={{
-            uri: 'https://www.macworld.com/wp-content/uploads/2023/01/notes-2-100754561-orig-2.jpg?resize=1200%2C800&quality=50&strip=all',
-          }}
-          className="h-28 w-[40%] rounded-2xl"
-        />
-        <View className="flex w-[60%] flex-col justify-between">
-          <Text className="text-base font-semibold">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates quis
+    <View className="flex w-full flex-row gap-5">
+      <Image
+        source={{
+          uri: image,
+        }}
+        className="h-28 w-[40%] rounded-2xl"
+      />
+      <View className="flex w-[60%] flex-1 flex-col justify-between">
+        <Text numberOfLines={3} className="text-base font-semibold dark:text-white">
+          {title}
+        </Text>
+        <View className="flex w-full flex-row items-center justify-between">
+          <Text className="text-sm text-[#8e8e93]">
+            {format(createdAt)} · {category}
           </Text>
-          <View className="flex w-full flex-row items-center justify-between">
-            <Text className="text-sm text-gray-600">2h ago · News</Text>
+          <View className="flex flex-row items-center gap-3">
             {bookmark && (
               <FontAwesome
                 name={isBookmarked ? 'bookmark' : 'bookmark-o'}
-                size={20}
+                size={15}
                 color="#007AFF"
                 onPress={toggleBookmark}
-                className="pr-5"
               />
+            )}
+            {pathname === '/bookmarks' && (
+              <Entypo name="dots-three-horizontal" size={15} color="gray" />
             )}
           </View>
         </View>
       </View>
-    </Link>
+    </View>
   );
 };
 
