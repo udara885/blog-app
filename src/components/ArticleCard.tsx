@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Alert } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useState } from 'react';
@@ -17,13 +17,23 @@ interface Article {
 const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Article }) => {
   const [post, setPost] = useState(article);
 
-  const toggleBookmark = () => {
-    setPost({ ...post, isBookmarked: !isBookmarked });
-  };
-
   const { title, image, createdAt, category, isBookmarked } = post;
 
   const pathname = usePathname();
+
+  const toggleBookmark = () => {
+    const newBookmarkState = !isBookmarked;
+
+    setPost({ ...post, isBookmarked: !isBookmarked });
+
+    Alert.alert(
+      newBookmarkState ? 'Bookmark Added' : 'Bookmark Removed',
+      newBookmarkState
+        ? `${title} has been added to your bookmarks`
+        : `${title} has been removed from your bookmarks`,
+      [{ text: 'OK' }]
+    );
+  };
 
   return (
     <View className="flex w-full flex-row gap-5">
