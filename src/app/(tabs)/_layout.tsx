@@ -4,25 +4,45 @@ import { Tabs } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Animated, Modal, Pressable, Text, useColorScheme, View } from 'react-native';
+import { Animated, Modal, Pressable, Text, View } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
+import { useColorScheme } from 'nativewind';
 
-const arr1 = ['Dark mode', 'Notification', 'Clear cache', 'Change font size'];
+const arr1 = ['Theme', 'Notification', 'Clear cache', 'Change font size'];
 
 const arr2 = [
   { title: 'Report application errors', icon: 'bug' as const },
   { title: 'Share the application', icon: 'share-alt' as const },
 ];
 
+const themes = ['light', 'dark'];
+
 const TabsLayout = () => {
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+
+  const [isThemeMenuVisible, setIsThemeMenuVisible] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(0)).current;
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  const { colorScheme, toggleColorScheme } = useColorScheme();
+
   const openBottomSheet = () => {
     setIsBottomSheetVisible(true);
+  };
+
+  const toggleThemeMenu = () => {
+    setIsThemeMenuVisible(!isThemeMenuVisible);
+  };
+
+  const selectTheme = (theme: string) => {
+    setIsThemeMenuVisible(false);
+    if (theme === 'light' && colorScheme === 'dark') {
+      toggleColorScheme();
+    } else if (theme === 'dark' && colorScheme === 'light') {
+      toggleColorScheme();
+    }
   };
 
   const closeBottomSheet = () => {
@@ -39,6 +59,7 @@ const TabsLayout = () => {
       }),
     ]).start(() => {
       setIsBottomSheetVisible(false);
+      setIsThemeMenuVisible(false);
     });
   };
 
@@ -57,28 +78,30 @@ const TabsLayout = () => {
         }),
       ]).start();
     }
-  }, [isBottomSheetVisible]);
-
-  const theme = useColorScheme();
+  }, [isBottomSheetVisible, fadeAnim, slideAnim]);
 
   return (
     <>
       <Tabs
         screenOptions={{
           tabBarStyle: {
-            backgroundColor: theme === 'dark' ? '#212529' : 'white',
+            backgroundColor: colorScheme === 'dark' ? '#212529' : 'white',
           },
         }}>
         <Tabs.Screen
           name="index"
           options={{
-            headerStyle: { backgroundColor: theme === 'dark' ? 'black' : 'white' },
-            headerTintColor: theme === 'dark' ? 'white' : 'black',
+            headerStyle: { backgroundColor: colorScheme === 'dark' ? 'black' : 'white' },
+            headerTintColor: colorScheme === 'dark' ? 'white' : 'black',
             headerTitle: 'I TIPS',
             title: 'Main page',
             headerRight: () => (
               <Pressable className="mr-4" onPress={openBottomSheet}>
-                <Feather name="settings" size={24} color={theme === 'dark' ? 'white' : 'black'} />
+                <Feather
+                  name="settings"
+                  size={24}
+                  color={colorScheme === 'dark' ? 'white' : 'black'}
+                />
               </Pressable>
             ),
             tabBarIcon: (tabInfo) => {
@@ -161,17 +184,43 @@ const TabsLayout = () => {
             </View>
             <View className="rounded-xl bg-white dark:bg-[#343A40]">
               {arr1.map((item, index) => (
-                <View
+                <Pressable
                   key={index}
+                  onPress={() => {
+                    if (index === 0) toggleThemeMenu();
+                  }}
                   className={`${index !== arr1.length - 1 && 'border-b-2 border-gray-100 dark:border-gray-500'} mx-3 flex flex-row items-center justify-between py-3`}>
                   <Text className="text-lg font-bold dark:text-white">{item}</Text>
                   <View className="flex flex-row items-center gap-1">
-                    {index === 0 && <Text className="text-lg text-gray-500">System</Text>}
+                    {index === 0 && (
+                      <Text className="text-lg capitalize text-gray-500">{colorScheme}</Text>
+                    )}
                     {index !== 2 && <AntDesign name="right" size={20} color="lightgray" />}
                   </View>
-                </View>
+                </Pressable>
               ))}
             </View>
+            {isThemeMenuVisible && (
+              <View className="absolute right-8 top-32 z-10 rounded-lg bg-gray-100 p-2 dark:bg-[#212529]">
+                {themes.map((theme, index) => (
+                  <Pressable
+                    key={index}
+                    onPress={() => selectTheme(theme)}
+                    className={`rounded-lg px-4 py-2 ${colorScheme === theme ? 'bg-white dark:bg-gray-700' : ''}`}>
+                    <View className="flex-row items-center justify-between gap-1">
+                      <Text className="capitalize dark:text-white">{theme}</Text>
+                      {colorScheme === theme && (
+                        <AntDesign
+                          name="check"
+                          size={18}
+                          color={colorScheme === 'dark' ? 'white' : 'black'}
+                        />
+                      )}
+                    </View>
+                  </Pressable>
+                ))}
+              </View>
+            )}
             <Text className="mt-2 pl-3 text-sm text-gray-500">
               Changing the font size will apply to the entire application.
             </Text>
@@ -185,7 +234,7 @@ const TabsLayout = () => {
                     <FontAwesome
                       name={item.icon}
                       size={24}
-                      color={theme === 'dark' ? 'white' : 'black'}
+                      color={colorScheme === 'dark' ? 'white' : 'black'}
                     />
                   </View>
                 </View>
