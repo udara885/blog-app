@@ -38,11 +38,7 @@ const TabsLayout = () => {
 
   const selectTheme = (theme: string) => {
     setIsThemeMenuVisible(false);
-    if (theme === 'light' && colorScheme === 'dark') {
-      toggleColorScheme();
-    } else if (theme === 'dark' && colorScheme === 'light') {
-      toggleColorScheme();
-    }
+    if (theme !== colorScheme) toggleColorScheme();
   };
 
   const closeBottomSheet = () => {
