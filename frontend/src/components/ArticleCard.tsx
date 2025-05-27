@@ -1,42 +1,37 @@
-import { View, Text, Image, Alert } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Entypo from '@expo/vector-icons/Entypo';
-import { useState } from 'react';
 import { usePathname } from 'expo-router';
 import { format } from 'timeago.js';
-
-interface Article {
-  title: string;
-  image: string;
-  category: string;
-  description: string;
-  createdAt: Date;
-  isBookmarked: boolean;
-}
+import { Article } from '../types/types';
+import { useStore } from '../store/store';
+import * as Burnt from 'burnt';
 
 const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Article }) => {
-  const [post, setPost] = useState(article);
+  const { updateArticle } = useStore();
 
-  const { title, image, createdAt, category, isBookmarked } = post;
+  const { title, image, createdAt, category, isBookmarked, _id } = article;
 
   const pathname = usePathname();
 
-  const toggleBookmark = () => {
-    const newBookmarkState = !isBookmarked;
-
-    setPost({ ...post, isBookmarked: !isBookmarked });
-
-    Alert.alert(
-      newBookmarkState ? 'Bookmark Added' : 'Bookmark Removed',
-      newBookmarkState
-        ? `${title} has been added to your bookmarks`
-        : `${title} has been removed from your bookmarks`,
-      [{ text: 'OK' }]
-    );
+  const toggleBookmark = async () => {
+    const { success, message } = await updateArticle(_id as string, {
+      ...article,
+      isBookmarked: !isBookmarked,
+    });
+    if (!success) {
+      Burnt.toast({
+        title: message,
+      });
+    } else {
+      Burnt.toast({
+        title: !isBookmarked ? 'Bookmark added' : 'Bookmark removed',
+      });
+    }
   };
 
   return (
-    <View className="flex w-full flex-row gap-5">
+    <View className="flex flex-row w-full gap-5">
       <Image
         source={{
           uri: image,
@@ -47,9 +42,9 @@ const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Articl
         <Text numberOfLines={3} className="text-base font-semibold dark:text-white">
           {title}
         </Text>
-        <View className="flex w-full flex-row items-center justify-between">
+        <View className="flex flex-row items-center justify-between w-full">
           <Text className="text-sm text-[#8e8e93]">
-            {format(createdAt)} · {category}
+            {createdAt ? format(createdAt) : ''} · {category}
           </Text>
           <View className="flex flex-row items-center gap-3">
             {bookmark && (
