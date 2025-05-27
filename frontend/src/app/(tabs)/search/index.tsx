@@ -2,16 +2,26 @@ import { View, Text, TextInput, ScrollView } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import ArticleCard from '~/src/components/ArticleCard';
 import { Link } from 'expo-router';
-import { articles } from '~/src/data/articles';
+import { useStore } from '~/src/store/store'
+import { useEffect } from 'react'
 
 const arr = ['iOS 15 beta', 'iPad mini 6', 'iPadOS 15 beta', 'Save battery'];
 
 const Search = () => {
+  const { articles, getArticles } = useStore()
+  
+  useEffect(() => {
+    const fetchAllArticles = async () => {
+      await getArticles()
+    }
+    fetchAllArticles()
+  },[getArticles])
+
   return (
     <ScrollView className="px-4 pt-10 dark:bg-black">
       <Text className="text-4xl font-bold dark:text-white">Search</Text>
-      <View className="relative mt-4 flex flex-row items-center justify-center">
-        <FontAwesome name="search" size={20} color="#8e8e93" className="absolute left-3 z-10" />
+      <View className="relative flex flex-row items-center justify-center mt-4">
+        <FontAwesome name="search" size={20} color="#8e8e93" className="absolute z-10 left-3" />
         <TextInput
           placeholder="iOS 15, iPhone 13"
           placeholderTextColor="#8e8e93"
@@ -30,7 +40,7 @@ const Search = () => {
       </View>
       <View className="-mx-4 mt-5 px-4 py-4 dark:bg-[#212529] ">
         <Text className="pb-2 text-xl font-bold dark:text-white">Propose</Text>
-        <View className="flex flex-col gap-5 border-t border-gray-200 py-10 pt-5 dark:border-gray-500">
+        <View className="flex flex-col gap-5 py-10 pt-5 border-t border-gray-200 dark:border-gray-500">
           {articles.map((article, index) => (
             <Link
               href={{ pathname: '/ArticleScreen', params: { article: JSON.stringify(article) } }}
