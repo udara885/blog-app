@@ -1,26 +1,22 @@
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Stack, usePathname } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useEffect } from 'react';
-import { Pressable, StatusBar, useColorScheme, View } from 'react-native';
+import { Pressable, StatusBar, View } from 'react-native';
+import { useColorScheme } from 'nativewind';
 
 const RootLayout = () => {
-  const pathname = usePathname();
-
-  const theme = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
   useEffect(() => {
-    if (pathname === '/ArticleScreen') {
+    if (colorScheme === 'dark') {
       StatusBar.setBarStyle('light-content');
       StatusBar.setBackgroundColor('black');
-    } else if (theme === 'dark') {
-      StatusBar.setBarStyle('light-content');
-      StatusBar.setBackgroundColor('#FFFFFF');
     } else {
       StatusBar.setBarStyle('dark-content');
-      StatusBar.setBackgroundColor('#FFFFFF');
+      StatusBar.setBackgroundColor('white');
     }
-  }, [pathname, theme]);
+  }, [colorScheme]);
 
   return (
     <Stack>
