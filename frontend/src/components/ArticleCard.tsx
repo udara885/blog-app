@@ -1,7 +1,5 @@
 import { View, Text, Image } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Entypo from '@expo/vector-icons/Entypo';
-import { usePathname } from 'expo-router';
 import { format } from 'timeago.js';
 import { Article } from '../types/types';
 import { useStore } from '../store/store';
@@ -11,8 +9,6 @@ const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Articl
   const { updateArticle } = useStore();
 
   const { title, image, createdAt, category, isBookmarked, _id } = article;
-
-  const pathname = usePathname();
 
   const toggleBookmark = async () => {
     const { success, message } = await updateArticle(_id as string, {
@@ -44,7 +40,7 @@ const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Articl
         </Text>
         <View className="flex flex-row items-center justify-between w-full">
           <Text className="text-sm text-[#8e8e93]">
-            {createdAt ? format(createdAt) : ''} · {category}
+            {createdAt ? format(new Date(createdAt)) : ''} · {category}
           </Text>
           <View className="flex flex-row items-center gap-3">
             {bookmark && (
@@ -54,9 +50,6 @@ const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Articl
                 color="#007AFF"
                 onPress={toggleBookmark}
               />
-            )}
-            {pathname === '/bookmarks' && (
-              <Entypo name="dots-three-horizontal" size={15} color="gray" />
             )}
           </View>
         </View>
