@@ -89,7 +89,7 @@ const TabsLayout = () => {
           options={{
             headerStyle: { backgroundColor: colorScheme === 'dark' ? 'black' : 'white' },
             headerTintColor: colorScheme === 'dark' ? 'white' : 'black',
-            headerTitle: 'I TIPS',
+            headerTitle: 'BLOGS',
             title: 'Main page',
             headerRight: () => (
               <Pressable className="mr-4" onPress={openBottomSheet}>
@@ -149,7 +149,7 @@ const TabsLayout = () => {
         transparent={true}
         animationType="none"
         onRequestClose={closeBottomSheet}>
-        <View className="flex-1 justify-end">
+        <View className="justify-end flex-1">
           <Animated.View
             style={{
               position: 'absolute',
@@ -160,7 +160,7 @@ const TabsLayout = () => {
               backgroundColor: 'rgba(0,0,0,0.5)',
               opacity: fadeAnim,
             }}>
-            <Pressable onPress={closeBottomSheet} className="h-full w-full" />
+            <Pressable onPress={closeBottomSheet} className="w-full h-full" />
           </Animated.View>
           <Animated.View
             style={{
@@ -174,7 +174,7 @@ const TabsLayout = () => {
               ],
             }}
             className="rounded-t-2xl bg-gray-100 p-5 dark:bg-[#212529]">
-            <View className="mb-5 flex flex-row items-center justify-between">
+            <View className="flex flex-row items-center justify-between mb-5">
               <Text className="text-3xl font-bold dark:text-white">Settings</Text>
               <AntDesign name="closecircle" size={20} color="gray" onPress={closeBottomSheet} />
             </View>
@@ -189,7 +189,7 @@ const TabsLayout = () => {
                   <Text className="text-lg font-bold dark:text-white">{item}</Text>
                   <View className="flex flex-row items-center gap-1">
                     {index === 0 && (
-                      <Text className="text-lg capitalize text-gray-500">{colorScheme}</Text>
+                      <Text className="text-lg text-gray-500 capitalize">{colorScheme}</Text>
                     )}
                     {index !== 2 && <AntDesign name="right" size={20} color="lightgray" />}
                   </View>
@@ -217,7 +217,7 @@ const TabsLayout = () => {
                 ))}
               </View>
             )}
-            <Text className="mt-2 pl-3 text-sm text-gray-500">
+            <Text className="pl-3 mt-2 text-sm text-gray-500">
               Changing the font size will apply to the entire application.
             </Text>
             <View className="mt-2 rounded-xl bg-white dark:bg-[#343A40]">
@@ -236,7 +236,7 @@ const TabsLayout = () => {
                 </View>
               ))}
             </View>
-            <View className="mt-2 flex flex-col items-center">
+            <View className="flex flex-col items-center mt-2">
               <Text className="text-gray-500">© 2025 - iThuThuat.vn</Text>
               <Text className="text-gray-500">Version 1.0</Text>
             </View>
