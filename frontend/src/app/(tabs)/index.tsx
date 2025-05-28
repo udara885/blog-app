@@ -32,7 +32,7 @@ const Index = () => {
       };
       setRandomFeaturedArticles(getRandomArticles());
     }
-  }, [articles]);
+  }, [articles.length]);
 
   return (
     <ScrollView className="p-4 dark:bg-black">
@@ -57,7 +57,7 @@ const Index = () => {
             <Text className="text-xl font-bold text-gray-400">Loading...</Text>
           </View>
         ) : articles.length !== 0 ? (
-          articles
+          [...articles]
             .reverse()
             .slice(0, 5)
             .map((article, index) => (
