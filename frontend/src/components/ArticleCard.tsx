@@ -3,7 +3,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { format } from 'timeago.js';
 import { Article } from '../types/types';
 import { useStore } from '../store/store';
-import * as Burnt from 'burnt';
+import Toast from 'react-native-toast-message';
 
 const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Article }) => {
   const { updateArticle } = useStore();
@@ -16,12 +16,14 @@ const ArticleCard = ({ bookmark, article }: { bookmark: boolean; article: Articl
       isBookmarked: !isBookmarked,
     });
     if (!success) {
-      Burnt.toast({
-        title: message,
+      Toast.show({
+        type: 'error',
+        text1: message,
       });
     } else {
-      Burnt.toast({
-        title: !isBookmarked ? 'Bookmark added' : 'Bookmark removed',
+      Toast.show({
+        type: 'success',
+        text1: isBookmarked ? 'Bookmark removed' : 'Bookmark added',
       });
     }
   };
