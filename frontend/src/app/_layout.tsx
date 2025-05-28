@@ -4,9 +4,26 @@ import { Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { Pressable, StatusBar, View } from 'react-native';
 import { useColorScheme } from 'nativewind';
+import { ArticleProvider, useArticle } from '../context/ArticleContext';
+import { useStore } from '../store/store';
 
-const RootLayout = () => {
+const StackNavigator = () => {
   const { colorScheme } = useColorScheme();
+
+  const { currentArticle, setCurrentArticle } = useArticle();
+
+  const { updateArticle } = useStore();
+
+  const toggleBookmark = async () => {
+    if (!currentArticle) return;
+    const updatedArticle = { ...currentArticle, isBookmarked: !currentArticle.isBookmarked };
+    try {
+      await updateArticle(currentArticle._id as string, updatedArticle);
+      setCurrentArticle(updatedArticle);
+    } catch (error) {
+      console.error('Failed to toggle bookmark: ', error);
+    }
+  };
 
   useEffect(() => {
     if (colorScheme === 'dark') {
@@ -30,8 +47,12 @@ const RootLayout = () => {
           headerTintColor: 'white',
           headerRight: () => (
             <View className="flex flex-row items-center">
-              <Pressable className="mr-4">
-                <FontAwesome name="bookmark-o" size={24} color="white" />
+              <Pressable className="mr-4" onPress={toggleBookmark}>
+                <FontAwesome
+                  name={currentArticle?.isBookmarked ? 'bookmark' : 'bookmark-o'}
+                  size={24}
+                  color="white"
+                />
               </Pressable>
               <Pressable className="mr-4">
                 <Feather name="share" size={24} color="white" />
@@ -41,6 +62,14 @@ const RootLayout = () => {
         }}
       />
     </Stack>
+  );
+};
+
+const RootLayout = () => {
+  return (
+    <ArticleProvider>
+      <StackNavigator />
+    </ArticleProvider>
   );
 };
 
