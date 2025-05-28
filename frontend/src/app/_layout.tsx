@@ -6,6 +6,7 @@ import { Pressable, StatusBar, View } from 'react-native';
 import { useColorScheme } from 'nativewind';
 import { ArticleProvider, useArticle } from '../context/ArticleContext';
 import { useStore } from '../store/store';
+import Toast from 'react-native-toast-message';
 
 const StackNavigator = () => {
   const { colorScheme } = useColorScheme();
@@ -18,7 +19,21 @@ const StackNavigator = () => {
     if (!currentArticle) return;
     const updatedArticle = { ...currentArticle, isBookmarked: !currentArticle.isBookmarked };
     try {
-      await updateArticle(currentArticle._id as string, updatedArticle);
+      const { success, message } = await updateArticle(
+        currentArticle._id as string,
+        updatedArticle
+      );
+      if (!success) {
+        Toast.show({
+          type: 'error',
+          text1: message,
+        });
+      } else {
+        Toast.show({
+          type: 'success',
+          text1: currentArticle.isBookmarked ? 'Bookmark removed' : 'Bookmark added',
+        });
+      }
       setCurrentArticle(updatedArticle);
     } catch (error) {
       console.error('Failed to toggle bookmark: ', error);
@@ -69,6 +84,7 @@ const RootLayout = () => {
   return (
     <ArticleProvider>
       <StackNavigator />
+      <Toast />
     </ArticleProvider>
   );
 };
