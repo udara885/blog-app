@@ -17,6 +17,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useArticle } from '../context/ArticleContext';
 import { useStore } from '../store/store';
 import Toast from 'react-native-toast-message';
+import CommentCard from '../components/CommentCard';
+import { Comment } from '../types/types';
 
 const ArticleScreen = () => {
   const { article } = useLocalSearchParams();
@@ -34,6 +36,12 @@ const ArticleScreen = () => {
   const { updateArticle } = useStore();
 
   const [comment, setComment] = useState({
+    name: '',
+    email: '',
+    comment: '',
+  });
+
+  const [errors, setErrors] = useState({
     name: '',
     email: '',
     comment: '',
@@ -60,8 +68,31 @@ const ArticleScreen = () => {
     });
   };
 
+  const validateForm = () => {
+    let errors = {
+      name: '',
+      email: '',
+      comment: '',
+    };
+
+    if (!comment.name) errors.name = 'Name is required';
+    if (!comment.email) errors.email = 'Email is required';
+    if (!comment.comment) errors.comment = 'Comment is required';
+
+    setErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
+
   const submitComment = async () => {
-    const comments = articleData.comments ? [...articleData.comments, comment] : [comment];
+    if (!validateForm()) return;
+
+    const newComment = {
+      ...comment,
+      createdAt: new Date().toISOString(),
+    };
+
+    const comments = articleData.comments ? [...articleData.comments, newComment] : [newComment];
 
     const updatedArticle = { ...articleData, comments };
 
@@ -116,15 +147,15 @@ const ArticleScreen = () => {
           <View className="relative">
             <Image source={{ uri: articleData.image }} className="h-[31.25rem] w-screen" />
             <View className="absolute bottom-0 p-4">
-              <View className="self-start px-3 py-1 rounded-full bg-gray-500/90">
-                <Text className="font-bold text-center text-white">{articleData.category}</Text>
+              <View className="self-start rounded-full bg-gray-500/90 px-3 py-1">
+                <Text className="text-center font-bold text-white">{articleData.category}</Text>
               </View>
               <Text className="mt-2 text-2xl font-bold text-white">{articleData.title}</Text>
             </View>
           </View>
           <View className="py-5">
             <View className="flex flex-row items-center gap-5">
-              <View className="bg-blue-500 rounded-full size-10"></View>
+              <View className="size-10 rounded-full bg-blue-500"></View>
               <Text className="font-bold dark:text-white">Udara Lakshan</Text>
               <View className="flex flex-row items-center gap-1">
                 <AntDesign name="clockcircle" size={12} color="gray" />
@@ -133,11 +164,19 @@ const ArticleScreen = () => {
                 </Text>
               </View>
             </View>
-            <Text className="mt-5 mb-12 dark:text-white">{articleData.description}</Text>
+            <Text className="mt-5 dark:text-white">{articleData.description}</Text>
+            {articleData.comments.length !== 0 && (
+              <View className="mb-16 mt-5">
+                <Text className="text-2xl font-bold dark:text-white">Comments</Text>
+                {articleData.comments.map((comment: Comment) => (
+                  <CommentCard key={comment._id} comment={comment} />
+                ))}
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>
-      <View className="absolute left-0 right-0 items-center bottom-5">
+      <View className="absolute bottom-5 left-0 right-0 items-center">
         <Pressable
           className="dark:bg- flex w-[90%] flex-row items-center justify-center gap-2 rounded-xl bg-gray-200 py-2 dark:bg-[#212529]"
           onPress={openBottomSheet}>
@@ -154,7 +193,7 @@ const ArticleScreen = () => {
         transparent={true}
         animationType="none"
         onRequestClose={closeBottomSheet}>
-        <View className="justify-end flex-1">
+        <View className="flex-1 justify-end">
           <Animated.View
             style={{
               position: 'absolute',
@@ -165,7 +204,7 @@ const ArticleScreen = () => {
               backgroundColor: 'rgba(0,0,0,0.5)',
               opacity: fadeAnim,
             }}>
-            <Pressable onPress={closeBottomSheet} className="w-full h-full" />
+            <Pressable onPress={closeBottomSheet} className="h-full w-full" />
           </Animated.View>
           <Animated.View
             style={{
@@ -179,7 +218,7 @@ const ArticleScreen = () => {
               ],
             }}
             className="rounded-t-2xl bg-gray-100 p-5 dark:bg-[#212529]">
-            <View className="flex flex-row items-center justify-between mb-5">
+            <View className="mb-5 flex flex-row items-center justify-between">
               <Text className="text-3xl font-bold dark:text-white">Submit a comment</Text>
               <AntDesign name="closecircle" size={20} color="gray" onPress={closeBottomSheet} />
             </View>
@@ -192,6 +231,7 @@ const ArticleScreen = () => {
                 value={comment.comment}
                 onChangeText={(text) => setComment({ ...comment, comment: text })}
               />
+              {errors.comment ? <Text className="text-red-500">{errors.comment}</Text> : null}
               <TextInput
                 placeholder="Name"
                 className="rounded-xl bg-white px-3 dark:bg-[#343A40] dark:text-white"
@@ -199,6 +239,7 @@ const ArticleScreen = () => {
                 value={comment.name}
                 onChangeText={(text) => setComment({ ...comment, name: text })}
               />
+              {errors.name ? <Text className="text-red-500">{errors.name}</Text> : null}
               <TextInput
                 placeholder="Email address"
                 className="rounded-xl bg-white px-3 dark:bg-[#343A40] dark:text-white"
@@ -206,13 +247,14 @@ const ArticleScreen = () => {
                 value={comment.email}
                 onChangeText={(text) => setComment({ ...comment, email: text })}
               />
+              {errors.email ? <Text className="text-red-500">{errors.email}</Text> : null}
               <Text className="text-sm text-gray-500">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 <Text className="text-[#007AFF]">Et repellendus maxime </Text>
                 fugiat maiores a
               </Text>
               <Pressable
-                className="flex flex-row items-center justify-center w-full gap-1 py-3 mx-auto rounded-xl"
+                className="mx-auto flex w-full flex-row items-center justify-center gap-1 rounded-xl py-3"
                 style={{ backgroundColor: '#007AFF' }}
                 onPress={submitComment}>
                 <MaterialCommunityIcons name="comment-text" size={24} color="white" />
