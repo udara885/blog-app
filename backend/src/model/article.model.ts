@@ -1,5 +1,25 @@
 import mongoose from "mongoose"
 
+const commentSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      require: true,
+    },
+    email: {
+      type: String,
+      require: true,
+    },
+    comment: {
+      type: String,
+      require: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+)
+
 const articleSchema = new mongoose.Schema(
   {
     title: {
@@ -22,6 +42,7 @@ const articleSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    comments: [commentSchema],
   },
   {
     timestamps: true,
