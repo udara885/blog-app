@@ -1,24 +1,20 @@
 import mongoose from "mongoose"
 
-const commentSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      require: true,
-    },
-    email: {
-      type: String,
-      require: true,
-    },
-    comment: {
-      type: String,
-      require: true,
-    },
+const commentSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    require: true,
   },
-  {
-    timestamps: true,
-  }
-)
+  email: {
+    type: String,
+    require: true,
+  },
+  comment: {
+    type: String,
+    require: true,
+  },
+  createdAt: Date,
+})
 
 const articleSchema = new mongoose.Schema(
   {
