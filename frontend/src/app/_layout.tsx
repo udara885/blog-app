@@ -7,6 +7,7 @@ import { useColorScheme } from 'nativewind';
 import { ArticleProvider, useArticle } from '../context/ArticleContext';
 import { useStore } from '../store/store';
 import Toast from 'react-native-toast-message';
+import toastConfig from '../toastConfig'
 
 const StackNavigator = () => {
   const { colorScheme } = useColorScheme();
@@ -84,7 +85,7 @@ const RootLayout = () => {
   return (
     <ArticleProvider>
       <StackNavigator />
-      <Toast />
+      <Toast config={toastConfig}/>
     </ArticleProvider>
   );
 };
