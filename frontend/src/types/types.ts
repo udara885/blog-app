@@ -10,7 +10,9 @@ export interface Article {
 }
 
 export interface Comment {
+  _id?: string;
   name: string;
   email: string;
   comment: string;
+  createdAt?: Date;
 }
