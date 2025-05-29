@@ -34,6 +34,22 @@ const Index = () => {
     }
   }, [articles.length]);
 
+  if (loading)
+    return (
+      <View className="flex flex-col items-center justify-center gap-3 mt-60">
+        <AntDesign name="loading1" size={50} color="gray" />
+        <Text className="text-xl font-bold text-gray-400">Loading...</Text>
+      </View>
+    );
+
+  if (articles.length < 0)
+    return (
+      <View className="flex flex-col items-center justify-center gap-3 mt-60">
+        <MaterialIcons name="article" size={50} color="gray" />
+        <Text className="text-xl font-bold text-gray-400">No Articles</Text>
+      </View>
+    );
+
   return (
     <ScrollView className="p-4 dark:bg-black">
       <Text className="text-3xl font-bold dark:text-white">Featured articles</Text>
@@ -51,28 +67,16 @@ const Index = () => {
       </View>
       <Text className="mt-5 text-3xl font-bold dark:text-white">New articles</Text>
       <View className="flex flex-col gap-5 mt-5 mb-10">
-        {loading ? (
-          <View className="flex flex-col items-center justify-center gap-3 mt-10">
-            <AntDesign name="loading1" size={50} color="gray" />
-            <Text className="text-xl font-bold text-gray-400">Loading...</Text>
-          </View>
-        ) : articles.length !== 0 ? (
-          [...articles]
-            .reverse()
-            .slice(0, 5)
-            .map((article, index) => (
-              <Link
-                href={{ pathname: '/ArticleScreen', params: { article: JSON.stringify(article) } }}
-                key={index}>
-                <ArticleCard bookmark={true} article={article} />
-              </Link>
-            ))
-        ) : (
-          <View className="flex flex-col items-center justify-center gap-3 mt-10">
-            <MaterialIcons name="article" size={50} color="gray" />
-            <Text className="text-xl font-bold text-gray-400">No New Articles</Text>
-          </View>
-        )}
+        {[...articles]
+          .reverse()
+          .slice(0, 5)
+          .map((article, index) => (
+            <Link
+              href={{ pathname: '/ArticleScreen', params: { article: JSON.stringify(article) } }}
+              key={index}>
+              <ArticleCard bookmark={true} article={article} />
+            </Link>
+          ))}
       </View>
     </ScrollView>
   );
