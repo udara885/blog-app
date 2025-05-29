@@ -15,6 +15,8 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { format } from 'timeago.js';
 import { useEffect, useRef, useState } from 'react';
 import { useArticle } from '../context/ArticleContext';
+import { useStore } from '../store/store';
+import Toast from 'react-native-toast-message';
 
 const ArticleScreen = () => {
   const { article } = useLocalSearchParams();
@@ -28,6 +30,14 @@ const ArticleScreen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const { setCurrentArticle } = useArticle();
+
+  const { updateArticle } = useStore();
+
+  const [comment, setComment] = useState({
+    name: '',
+    email: '',
+    comment: '',
+  });
 
   const openBottomSheet = () => {
     setIsBottomSheetVisible(true);
@@ -48,6 +58,31 @@ const ArticleScreen = () => {
     ]).start(() => {
       setIsBottomSheetVisible(false);
     });
+  };
+
+  const submitComment = async () => {
+    const comments = articleData.comments ? [...articleData.comments, comment] : [comment];
+
+    const updatedArticle = { ...articleData, comments };
+
+    const { success, message } = await updateArticle(articleData._id, updatedArticle);
+    if (!success) {
+      Toast.show({
+        type: 'error',
+        text1: message,
+      });
+    } else {
+      Toast.show({
+        type: 'success',
+        text1: 'Comment added',
+      });
+      setComment({
+        name: '',
+        email: '',
+        comment: '',
+      });
+      closeBottomSheet();
+    }
   };
 
   useEffect(() => {
@@ -154,16 +189,22 @@ const ArticleScreen = () => {
                 className="rounded-xl bg-white px-3 dark:bg-[#343A40] dark:text-white"
                 placeholderTextColor={theme === 'dark' ? '#6C757D' : 'black'}
                 multiline={true}
+                value={comment.comment}
+                onChangeText={(text) => setComment({ ...comment, comment: text })}
               />
               <TextInput
                 placeholder="Name"
                 className="rounded-xl bg-white px-3 dark:bg-[#343A40] dark:text-white"
                 placeholderTextColor={theme === 'dark' ? '#6C757D' : 'black'}
+                value={comment.name}
+                onChangeText={(text) => setComment({ ...comment, name: text })}
               />
               <TextInput
                 placeholder="Email address"
                 className="rounded-xl bg-white px-3 dark:bg-[#343A40] dark:text-white"
                 placeholderTextColor={theme === 'dark' ? '#6C757D' : 'black'}
+                value={comment.email}
+                onChangeText={(text) => setComment({ ...comment, email: text })}
               />
               <Text className="text-sm text-gray-500">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -172,7 +213,8 @@ const ArticleScreen = () => {
               </Text>
               <Pressable
                 className="flex flex-row items-center justify-center w-full gap-1 py-3 mx-auto rounded-xl"
-                style={{ backgroundColor: '#007AFF' }}>
+                style={{ backgroundColor: '#007AFF' }}
+                onPress={submitComment}>
                 <MaterialCommunityIcons name="comment-text" size={24} color="white" />
                 <Text className="text-lg font-bold text-white">Send</Text>
               </Pressable>
