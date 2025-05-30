@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Article } from '../types/types';
+import { BACKEND_URL } from '@env';
 
 interface StoreState {
   articles: Article[];
@@ -42,21 +43,19 @@ export const useStore = create<StoreState>((set) => ({
   articles: [],
   setArticles: (articles) => set({ articles }),
   getArticles: async () => {
-    const res = await fetch('http://weekly-mead-lakshandev-6b9fbd5b.koyeb.app/api/v1/articles');
+    const res = await fetch(`${BACKEND_URL}/api/v1/articles`);
     const data = await res.json();
     if (!data.success) return { success: false, message: data.error };
     set({ articles: data.data });
   },
   getArticle: async (id) => {
-    const res = await fetch(
-      `http://weekly-mead-lakshandev-6b9fbd5b.koyeb.app/api/v1/articles/${id}`
-    );
+    const res = await fetch(`${BACKEND_URL}/api/v1/articles/${id}`);
     const data = await res.json();
     if (!data.success) return { success: false, message: data.error };
     return { success: true, data: data.data };
   },
   addArticle: async (newArticle) => {
-    const res = await fetch('http://weekly-mead-lakshandev-6b9fbd5b.koyeb.app/api/v1/articles', {
+    const res = await fetch(`${BACKEND_URL}/api/v1/articles`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,17 +68,14 @@ export const useStore = create<StoreState>((set) => ({
     return { success: true, message: 'Article added successfully' };
   },
   updateArticle: async (id, updatedArticle) => {
-    const res = await fetch(
-      `http://weekly-mead-lakshandev-6b9fbd5b.koyeb.app/api/v1/articles/${id}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        
-        body: JSON.stringify(updatedArticle),
-      }
-    );
+    const res = await fetch(`${BACKEND_URL}/api/v1/articles/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify(updatedArticle),
+    });
     const data = await res.json();
     if (!data.success) return { success: false, message: data.error };
     set((state) => ({
@@ -88,12 +84,9 @@ export const useStore = create<StoreState>((set) => ({
     return { success: true, message: 'Article updated successfully' };
   },
   deleteArticle: async (id) => {
-    const res = await fetch(
-      `http://weekly-mead-lakshandev-6b9fbd5b.koyeb.app/api/v1/articles/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
+    const res = await fetch(`${BACKEND_URL}/api/v1/articles/${id}`, {
+      method: 'DELETE',
+    });
     const data = await res.json();
     if (!data.success) return { success: false, message: data.error };
     set((state) => ({ articles: state.articles.filter((article) => article._id === id) }));
