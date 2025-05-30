@@ -36,7 +36,7 @@ const Index = () => {
 
   if (loading)
     return (
-      <View className="flex flex-col items-center justify-center gap-3 mt-60">
+      <View className="flex flex-col items-center justify-center h-full gap-3 dark:bg-black">
         <AntDesign name="loading1" size={50} color="gray" />
         <Text className="text-xl font-bold text-gray-400">Loading...</Text>
       </View>
@@ -44,7 +44,7 @@ const Index = () => {
 
   if (articles.length < 0)
     return (
-      <View className="flex flex-col items-center justify-center gap-3 mt-60">
+      <View className="flex flex-col items-center justify-center h-full gap-3 dark:bg-black">
         <MaterialIcons name="article" size={50} color="gray" />
         <Text className="text-xl font-bold text-gray-400">No Articles</Text>
       </View>
