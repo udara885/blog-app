@@ -1,15 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import {
-  View,
-  Text,
-  Image,
-  Pressable,
-  ScrollView,
-  Modal,
-  TextInput,
-  useColorScheme,
-  Animated,
-} from 'react-native';
+import { View, Text, Image, Pressable, ScrollView, Modal, TextInput, Animated } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { format } from 'timeago.js';
@@ -19,11 +9,12 @@ import { useStore } from '../store/store';
 import Toast from 'react-native-toast-message';
 import CommentCard from '../components/CommentCard';
 import { Comment } from '../types/types';
+import { useColorScheme } from 'nativewind';
 
 const ArticleScreen = () => {
   const { article } = useLocalSearchParams();
 
-  const articleData = article ? JSON.parse(article.toString()) : null;
+  const [articleData, setArticleData] = useState(article ? JSON.parse(article.toString()) : null);
 
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
 
@@ -34,6 +25,8 @@ const ArticleScreen = () => {
   const { setCurrentArticle } = useArticle();
 
   const { updateArticle } = useStore();
+
+  const { colorScheme } = useColorScheme();
 
   const [comment, setComment] = useState({
     name: '',
@@ -103,11 +96,13 @@ const ArticleScreen = () => {
         type: 'error',
         text1: message,
       });
+      setArticleData(articleData);
     } else {
       Toast.show({
         type: 'success',
         text1: 'Comment added',
       });
+      setArticleData(updatedArticle);
       setComment({
         name: '',
         email: '',
@@ -137,9 +132,7 @@ const ArticleScreen = () => {
   useEffect(() => {
     setCurrentArticle(articleData);
     return () => setCurrentArticle(null);
-  }, []);
-
-  const theme = useColorScheme();
+  }, [setCurrentArticle, articleData]);
 
   return (
     <>
@@ -165,12 +158,15 @@ const ArticleScreen = () => {
                 </Text>
               </View>
             </View>
-            <Text className="mt-5 dark:text-white">{articleData.description}</Text>
+            <Text
+              className={`mt-5 ${articleData.comments.length === 0 && 'mb-16'} dark:text-white`}>
+              {articleData.description}
+            </Text>
             {articleData.comments.length !== 0 && (
               <View className="mt-5 mb-16">
                 <Text className="text-2xl font-bold dark:text-white">Comments</Text>
-                {articleData.comments.map((comment: Comment) => (
-                  <CommentCard key={comment._id} comment={comment} />
+                {articleData.comments.map((comment: Comment, index: number) => (
+                  <CommentCard key={index} comment={comment} />
                 ))}
               </View>
             )}
@@ -184,7 +180,7 @@ const ArticleScreen = () => {
           <MaterialCommunityIcons
             name="comment-text"
             size={24}
-            color={theme === 'dark' ? 'white' : 'gray'}
+            color={colorScheme === 'dark' ? 'white' : 'gray'}
           />
           <Text className="text-xl font-bold text-gray-400 dark:text-white">Comment</Text>
         </Pressable>
@@ -227,7 +223,7 @@ const ArticleScreen = () => {
               <TextInput
                 placeholder="Write your comment..."
                 className="rounded-xl bg-white px-3 dark:bg-[#343A40] dark:text-white"
-                placeholderTextColor={theme === 'dark' ? '#6C757D' : 'black'}
+                placeholderTextColor={colorScheme === 'dark' ? '#6C757D' : 'black'}
                 multiline={true}
                 value={comment.comment}
                 onChangeText={(text) => setComment({ ...comment, comment: text })}
@@ -236,7 +232,7 @@ const ArticleScreen = () => {
               <TextInput
                 placeholder="Name"
                 className="rounded-xl bg-white px-3 dark:bg-[#343A40] dark:text-white"
-                placeholderTextColor={theme === 'dark' ? '#6C757D' : 'black'}
+                placeholderTextColor={colorScheme === 'dark' ? '#6C757D' : 'black'}
                 value={comment.name}
                 onChangeText={(text) => setComment({ ...comment, name: text })}
               />
@@ -244,15 +240,15 @@ const ArticleScreen = () => {
               <TextInput
                 placeholder="Email address"
                 className="rounded-xl bg-white px-3 dark:bg-[#343A40] dark:text-white"
-                placeholderTextColor={theme === 'dark' ? '#6C757D' : 'black'}
+                placeholderTextColor={colorScheme === 'dark' ? '#6C757D' : 'black'}
                 value={comment.email}
                 onChangeText={(text) => setComment({ ...comment, email: text })}
               />
               {errors.email ? <Text className="text-red-500">{errors.email}</Text> : null}
               <Text className="text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                <Text className="text-[#007AFF]">Et repellendus maxime </Text>
-                fugiat maiores a
+                Your email won&apos;t be published. By submitting, you agree to our
+                <Text className="text-[#007AFF]"> Privacy Policy </Text>
+                and comment guidelines
               </Text>
               <Pressable
                 className="flex flex-row items-center justify-center w-full gap-1 py-3 mx-auto rounded-xl"
