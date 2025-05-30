@@ -7,7 +7,7 @@ import { useColorScheme } from 'nativewind';
 import { ArticleProvider, useArticle } from '../context/ArticleContext';
 import { useStore } from '../store/store';
 import Toast from 'react-native-toast-message';
-import toastConfig from '../toastConfig'
+import toastConfig from '../toastConfig';
 
 const StackNavigator = () => {
   const { colorScheme } = useColorScheme();
@@ -15,6 +15,8 @@ const StackNavigator = () => {
   const { currentArticle, setCurrentArticle } = useArticle();
 
   const { updateArticle } = useStore();
+
+  const isDark = colorScheme === 'dark';
 
   const toggleBookmark = async () => {
     if (!currentArticle) return;
@@ -42,14 +44,14 @@ const StackNavigator = () => {
   };
 
   useEffect(() => {
-    if (colorScheme === 'dark') {
+    if (isDark) {
       StatusBar.setBarStyle('light-content');
       StatusBar.setBackgroundColor('black');
     } else {
       StatusBar.setBarStyle('dark-content');
       StatusBar.setBackgroundColor('white');
     }
-  }, [colorScheme]);
+  }, [isDark]);
 
   return (
     <Stack>
@@ -77,6 +79,14 @@ const StackNavigator = () => {
           ),
         }}
       />
+      <Stack.Screen
+        name="DiscoverScreen"
+        options={{
+          headerTitle: 'Discover',
+          headerTransparent: true,
+          headerTintColor: isDark ? 'white' : 'black',
+        }}
+      />
     </Stack>
   );
 };
@@ -85,7 +95,7 @@ const RootLayout = () => {
   return (
     <ArticleProvider>
       <StackNavigator />
-      <Toast config={toastConfig}/>
+      <Toast config={toastConfig} />
     </ArticleProvider>
   );
 };
